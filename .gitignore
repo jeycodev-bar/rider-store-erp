@@ -1,0 +1,61 @@
+# =====================================================================
+# RIDER STORE ERP — Production `.gitignore`
+# =====================================================================
+
+# ---------------------------------------------------------------------
+# 1. SEGURIDAD Y ENTORNOS (¡Súper importante!)
+# ---------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------------
+# 2. FRONTEND (Node.js / React 19 / Vite / pnpm)
+# ---------------------------------------------------------------------
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+
+# Logs de paquetes
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ---------------------------------------------------------------------
+# 3. BACKEND (Rust / Tauri 2)
+# ---------------------------------------------------------------------
+# Evita subir los gigabytes de compilación de Cargo
+/target/
+src-tauri/target/
+
+# Esquemas autogenerados de Tauri 2 para capabilities
+src-tauri/gen/schemas/
+
+# Respaldos temporales de Rust
+*.rs.bk
+
+# ---------------------------------------------------------------------
+# 4. DOCKER Y BASE DE DATOS
+# ---------------------------------------------------------------------
+docker/postgres_data/
+
+# ---------------------------------------------------------------------
+# 5. IDEs Y SISTEMA OPERATIVO
+# ---------------------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

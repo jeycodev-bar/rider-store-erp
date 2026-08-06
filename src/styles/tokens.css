@@ -1,0 +1,41 @@
+/* src/styles/tokens.css */
+@import "tailwindcss";
+
+/* Tokens base — se convierten automáticamente en utilidades
+   (ej. --color-brand-500 → bg-brand-500, text-brand-500, etc.) */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: oklch(0.97 0.02 250);
+  --color-brand-500: oklch(0.55 0.18 250);
+  --color-brand-600: oklch(0.48 0.18 250);
+  --color-brand-900: oklch(0.25 0.12 250);
+
+  --color-success-500: oklch(0.65 0.18 145);
+  --color-warning-500: oklch(0.75 0.18 85);
+  --color-danger-500: oklch(0.6 0.22 25);
+
+  --radius-card: 0.75rem;
+}
+
+/* Tokens semánticos: lo que realmente usan los componentes.
+   Cambian de valor según el tema activo — los componentes
+   nunca referencian --color-brand-500 directamente, sino
+   --color-surface, --color-text-primary, etc. */
+:root {
+  --color-surface: oklch(1 0 0);
+  --color-surface-elevated: oklch(0.98 0 0);
+  --color-text-primary: oklch(0.2 0 0);
+  --color-text-secondary: oklch(0.45 0 0);
+  --color-border: oklch(0.9 0 0);
+}
+
+/* Se activa agregando/quitando la clase "dark" en <html>
+   (ver ThemeProvider más abajo) */
+.dark {
+  --color-surface: oklch(0.18 0 0);
+  --color-surface-elevated: oklch(0.22 0 0);
+  --color-text-primary: oklch(0.95 0 0);
+  --color-text-secondary: oklch(0.7 0 0);
+  --color-border: oklch(0.3 0 0);
+}

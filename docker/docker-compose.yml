@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: rider_store_pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-admin_rider}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-implacablesujeto479trexdog105DBh904CncO0}
+      POSTGRES_DB: ${DB_NAME:-rider_store_db}
+    ports:
+      - "${DB_PORT:-5435}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER:-admin_rider} -d ${DB_NAME:-rider_store_db}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: rider_store_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@tienda.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-implacablesujeto47965ubhye105DBh457fourbr0ws}
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles:
+      - tools
+
+volumes:
+  pg_data:
+    driver: local
