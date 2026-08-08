@@ -1,3 +1,5 @@
+// src-tauri/src/db/pool.rs
+
 use sqlx::postgres::{PgPool, PgPoolOptions};
 use std::time::Duration;
 use thiserror::Error;

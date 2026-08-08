@@ -1,3 +1,5 @@
+// src-tauri/src/queries/users.rs
+
 use crate::db::AppResult;
 use crate::models::identity::{CreateUserInput, User};
 use sqlx::PgPool;

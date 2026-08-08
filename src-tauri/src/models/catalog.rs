@@ -1,3 +1,5 @@
+// src-tauri/src/models/catalog.rs
+
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
@@ -5,6 +7,7 @@ use uuid::Uuid;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, sqlx::Type)]
 #[sqlx(type_name = "catalog.product_type", rename_all = "UPPERCASE")]
+#[serde(rename_all = "UPPERCASE")]
 pub enum ProductType {
     Moto,
     Motocarga,
@@ -17,6 +20,7 @@ pub enum ProductType {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, sqlx::Type)]
 #[sqlx(type_name = "catalog.unit_of_measure", rename_all = "UPPERCASE")]
+#[serde(rename_all = "UPPERCASE")]
 pub enum UnitOfMeasure {
     Unidad,
     Litro,
@@ -28,6 +32,7 @@ pub enum UnitOfMeasure {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct Brand {
     pub id: Uuid,
     pub name: String,
@@ -39,6 +44,7 @@ pub struct Brand {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct Category {
     pub id: Uuid,
     pub parent_id: Option<Uuid>,
@@ -52,6 +58,7 @@ pub struct Category {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct Product {
     pub id: Uuid,
     pub sku: String,
@@ -76,6 +83,7 @@ pub struct Product {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct VehicleSpecs {
     pub product_id: Uuid,
     pub model_year: i16,
@@ -90,6 +98,7 @@ pub struct VehicleSpecs {
 
 /// DTO de entrada para creación de producto desde el formulario del frontend.
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateProductInput {
     pub sku: String,
     pub name: String,
@@ -101,4 +110,30 @@ pub struct CreateProductInput {
     pub is_serialized: bool,
     pub base_price: Decimal,
     pub base_cost: Decimal,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
+pub struct Supplier {
+    pub id: Uuid,
+    pub business_name: String,
+    pub tax_id: String, // RUC
+    pub contact_name: Option<String>,
+    pub phone: Option<String>,
+    pub email: Option<String>,
+    pub address: Option<String>,
+    pub is_active: bool,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateSupplierInput {
+    pub business_name: String,
+    pub tax_id: String,
+    pub contact_name: Option<String>,
+    pub phone: Option<String>,
+    pub email: Option<String>,
+    pub address: Option<String>,
 }

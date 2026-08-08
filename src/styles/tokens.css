@@ -1,41 +1,93 @@
 /* src/styles/tokens.css */
 @import "tailwindcss";
 
-/* Tokens base — se convierten automáticamente en utilidades
-   (ej. --color-brand-500 → bg-brand-500, text-brand-500, etc.) */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand-50: oklch(0.97 0.02 250);
-  --color-brand-500: oklch(0.55 0.18 250);
-  --color-brand-600: oklch(0.48 0.18 250);
-  --color-brand-900: oklch(0.25 0.12 250);
+  /* -------------------------------------------------------------
+   * 1. TOKENS BASE (Valores fijos)
+   * ------------------------------------------------------------- */
 
-  --color-success-500: oklch(0.65 0.18 145);
-  --color-warning-500: oklch(0.75 0.18 85);
-  --color-danger-500: oklch(0.6 0.22 25);
+  /* Brand: Cyan Eléctrico / Mente Teal (Ultra moderno y limpio) */
+  --color-brand-50: oklch(0.97 0.03 195);
+  --color-brand-100: oklch(0.92 0.06 195);
+  --color-brand-500: oklch(0.68 0.19 195);
+  /* Color primario impactante */
+  --color-brand-600: oklch(0.58 0.20 195);
+  /* Hover state */
+  --color-brand-900: oklch(0.28 0.12 195);
+  /* Acentos oscuros */
 
-  --radius-card: 0.75rem;
+  /* Estados semánticos calibrados (Vivos pero legibles) */
+  --color-success-500: oklch(0.72 0.21 150);
+  /* Esmeralda Neón */
+  --color-warning-500: oklch(0.80 0.18 75);
+  /* Ámbar Solar */
+  --color-danger-500: oklch(0.63 0.24 25);
+  /* Coral carmesí */
+
+  --radius-card: 0.85rem;
+
+  /* -------------------------------------------------------------
+   * 2. MAPEO PARA UTILIDADES DE TAILWIND (bg-surface, text-primary, etc.)
+   * ------------------------------------------------------------- */
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border: var(--border);
+
+  /* Gradientes */
+  --background-image-brand-primary:
+    radial-gradient(circle at center,
+      oklch(32.643% 0.07252 241.824) 0%,
+      oklch(15.718% 0.09733 264.205) 100%
+    );
 }
 
-/* Tokens semánticos: lo que realmente usan los componentes.
-   Cambian de valor según el tema activo — los componentes
-   nunca referencian --color-brand-500 directamente, sino
-   --color-surface, --color-text-primary, etc. */
+/* -------------------------------------------------------------
+ * 3. TEMAS DINÁMICOS (Light vs Dark)
+ * ------------------------------------------------------------- */
+
+/* MODO CLARO: Titanio Limpio & Porcelana con matiz frío */
 :root {
-  --color-surface: oklch(1 0 0);
-  --color-surface-elevated: oklch(0.98 0 0);
-  --color-text-primary: oklch(0.2 0 0);
-  --color-text-secondary: oklch(0.45 0 0);
-  --color-border: oklch(0.9 0 0);
+  --surface: oklch(0.985 0.005 240);
+  /* Fondo porcelana helada */
+  --surface-elevated: oklch(1 0 0);
+  /* Tarjetas en blanco puro */
+   --text-primary: oklch(32.643% 0.07252 241.824);  /* --text-primary: oklch(0.18 0.03 240); */
+  /* Tinta azul-negra profunda */
+  --text-secondary: oklch(0.48 0.025 240);
+  /* Gris pizarra con personalidad */
+  --border: oklch(0.91 0.01 240);
+  /* Bordes suaves de alta definición */
+
+  /* --brand-primary-gradient: radial-gradient(
+    circle at center,
+    oklch(67.881% 0.14584 280.915) 0%,
+    oklch(30.021% 0.06512 236.559) 100%
+  ); */
+  
+  /* --background-image-brand-primary:
+    radial-gradient(
+      circle at center,
+      oklch(15.718% 0.09733 264.205) 0%,
+      oklch(69.928% 0.14458 98.3) 100%
+    ); */
 }
 
-/* Se activa agregando/quitando la clase "dark" en <html>
-   (ver ThemeProvider más abajo) */
+/* MODO OSCURO: Obsidiana Profunda (Cero fatiga visual, alto contraste) */
 .dark {
-  --color-surface: oklch(0.18 0 0);
-  --color-surface-elevated: oklch(0.22 0 0);
-  --color-text-primary: oklch(0.95 0 0);
-  --color-text-secondary: oklch(0.7 0 0);
-  --color-border: oklch(0.3 0 0);
+  --surface: oklch(0.14 0.025 240);
+  /* Fondo obsidiana azulada */
+  --surface-elevated: oklch(0.19 0.03 240);
+  /* Tarjetas elevadas/Modales */
+  --text-primary: oklch(0.96 0.01 240);
+  /* Blanco hielo de alta legibilidad */
+  --text-secondary: oklch(0.72 0.02 240);
+  /* Slate medio para lectura secundaria */
+  --border: oklch(0.26 0.03 240);
+  /* Bordes de cristal oscuro */
 }
+
+

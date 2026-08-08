@@ -1,5 +1,8 @@
-pub mod identity;
+// src-tauri/src/models/mod.rs
+
 pub mod catalog;
+pub mod identity;
 pub mod inventory;
-// pub mod products;
-// pub mod users;
+pub mod purchasing;
+pub mod sales;
+pub mod workshop;

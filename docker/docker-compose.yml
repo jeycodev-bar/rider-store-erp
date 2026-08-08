@@ -1,5 +1,4 @@
-version: "3.9"
-
+name: rider-store-container
 services:
   postgres:
     image: postgres:17-alpine
@@ -7,6 +6,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER:-admin_rider}
+      # POSTGRES_PASSWORD: ${DB_PASSWORD:-dev3password3postgress}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-implacablesujeto479trexdog105DBh904CncO0}
       POSTGRES_DB: ${DB_NAME:-rider_store_db}
     ports:
@@ -30,6 +30,7 @@ services:
     restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@tienda.local}
+      # PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-dev7password7pgadmin}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-implacablesujeto47965ubhye105DBh457fourbr0ws}
     ports:
       - "${PGADMIN_PORT:-5050}:80"

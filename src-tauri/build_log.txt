@@ -1,0 +1,99 @@
+   Compiling rider_store_erp v0.1.0 (D:\Archivos_vscode\rider-store-erp\src-tauri)
+warning: struct `VehicleSpecs` is never constructed
+  --> src\models\catalog.rs:87:12
+   |
+87 | pub struct VehicleSpecs {
+   |            ^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `Role` is never constructed
+  --> src\models\identity.rs:36:12
+   |
+36 | pub struct Role {
+   |            ^^^^
+
+warning: struct `Permission` is never constructed
+  --> src\models\identity.rs:47:12
+   |
+47 | pub struct Permission {
+   |            ^^^^^^^^^^
+
+warning: struct `CreateUserInput` is never constructed
+  --> src\models\identity.rs:60:12
+   |
+60 | pub struct CreateUserInput {
+   |            ^^^^^^^^^^^^^^^
+
+warning: struct `VehicleUnit` is never constructed
+  --> src\models\inventory.rs:64:12
+   |
+64 | pub struct VehicleUnit {
+   |            ^^^^^^^^^^^
+
+warning: struct `StockMovement` is never constructed
+  --> src\models\inventory.rs:81:12
+   |
+81 | pub struct StockMovement {
+   |            ^^^^^^^^^^^^^
+
+warning: struct `PurchaseOrderItem` is never constructed
+  --> src\models\purchasing.rs:39:12
+   |
+39 | pub struct PurchaseOrderItem {
+   |            ^^^^^^^^^^^^^^^^^
+
+warning: struct `SaleItem` is never constructed
+   --> src\models\sales.rs:116:12
+    |
+116 | pub struct SaleItem {
+    |            ^^^^^^^^
+
+warning: struct `Payment` is never constructed
+   --> src\models\sales.rs:129:12
+    |
+129 | pub struct Payment {
+    |            ^^^^^^^
+
+warning: struct `LaborCatalog` is never constructed
+  --> src\models\workshop.rs:54:12
+   |
+54 | pub struct LaborCatalog {
+   |            ^^^^^^^^^^^^
+
+warning: struct `ServiceOrderLabor` is never constructed
+  --> src\models\workshop.rs:98:12
+   |
+98 | pub struct ServiceOrderLabor {
+   |            ^^^^^^^^^^^^^^^^^
+
+warning: struct `ServiceOrderPart` is never constructed
+   --> src\models\workshop.rs:108:12
+    |
+108 | pub struct ServiceOrderPart {
+    |            ^^^^^^^^^^^^^^^^
+
+warning: function `list_active` is never used
+  --> src\queries\users.rs:52:14
+   |
+52 | pub async fn list_active(pool: &PgPool) -> AppResult<Vec<User>> {
+   |              ^^^^^^^^^^^
+
+warning: function `create` is never used
+  --> src\queries\users.rs:71:14
+   |
+71 | pub async fn create(pool: &PgPool, input: CreateUserInput) -> AppResult<User> {
+   |              ^^^^^^
+
+warning: function `soft_delete` is never used
+  --> src\queries\users.rs:97:14
+   |
+97 | pub async fn soft_delete(pool: &PgPool, id: Uuid) -> AppResult<()> {
+   |              ^^^^^^^^^^^
+
+warning: linker stdout: Creando biblioteca D:\Archivos_vscode\rider-store-erp\src-tauri\target\debug\deps\rider_store_erp_lib.dll.lib y objeto D:\Archivos_vscode\rider-store-erp\src-tauri\target\debug\deps\rider_store_erp_lib.dll.exp
+  |
+  = note: `#[warn(linker_messages)]` on by default
+
+warning: `rider_store_erp` (lib) generated 16 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 16.26s

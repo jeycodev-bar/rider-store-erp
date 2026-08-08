@@ -6,7 +6,7 @@ authors = ["you"]
 edition = "2021"
 
 [lib]
-# Nombre de la librería que llamará main.rs
+# Nombre de la librería que llama main.rs
 name = "rider_store_erp_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
@@ -17,6 +17,9 @@ tauri-build = { version = "2", features = [] }
 # --- NÚCLEO TAURI 2 ---
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
+
+# --- SEGURIDAD Y HASHING ---
+argon2 = "0.5"
 
 # --- MOTOR ASÍNCRONO ---
 tokio = { version = "1", features = ["full"] }
@@ -42,4 +45,3 @@ serde_json = "1"
 # --- MANEJO DE ERRORES Y ENTORNO ---
 thiserror = "1"
 dotenvy = "0.15"
-

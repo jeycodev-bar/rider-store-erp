@@ -1,3 +1,5 @@
+// src-tauri/src/db/error.rs
+
 use serde::Serialize;
 use thiserror::Error;
 

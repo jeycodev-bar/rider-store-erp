@@ -1,10 +1,16 @@
+// src-tauri/src/models/inventory.rs
+
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, sqlx::Type)]
-#[sqlx(type_name = "inventory.vehicle_unit_status", rename_all = "UPPERCASE")]
+#[sqlx(
+    type_name = "inventory.vehicle_unit_status",
+    rename_all = "SCREAMING_SNAKE_CASE"
+)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum VehicleUnitStatus {
     Disponible,
     Reservado,
@@ -15,7 +21,11 @@ pub enum VehicleUnitStatus {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, sqlx::Type)]
-#[sqlx(type_name = "inventory.movement_type", rename_all = "UPPERCASE")]
+#[sqlx(
+    type_name = "inventory.movement_type",
+    rename_all = "SCREAMING_SNAKE_CASE"
+)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum MovementType {
     IngresoCompra,
     IngresoAjuste,
@@ -28,6 +38,7 @@ pub enum MovementType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct Warehouse {
     pub id: Uuid,
     pub name: String,
@@ -38,6 +49,7 @@ pub struct Warehouse {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct StockItem {
     pub id: Uuid,
     pub product_id: Uuid,
@@ -48,6 +60,7 @@ pub struct StockItem {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct VehicleUnit {
     pub id: Uuid,
     pub product_id: Uuid,
@@ -64,6 +77,7 @@ pub struct VehicleUnit {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct StockMovement {
     pub id: Uuid,
     pub movement_type: MovementType,

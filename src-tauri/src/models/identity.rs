@@ -1,9 +1,12 @@
+// src-tauri/src/models/identity.rs
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, sqlx::Type)]
 #[sqlx(type_name = "identity.user_status", rename_all = "UPPERCASE")]
+#[serde(rename_all = "UPPERCASE")]
 pub enum UserStatus {
     Activo,
     Inactivo,
@@ -11,6 +14,7 @@ pub enum UserStatus {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct User {
     pub id: Uuid,
     pub username: String,
@@ -28,6 +32,7 @@ pub struct User {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct Role {
     pub id: Uuid,
     pub name: String,
@@ -38,6 +43,7 @@ pub struct Role {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct Permission {
     pub id: Uuid,
     pub code: String,
@@ -50,6 +56,7 @@ pub struct Permission {
 /// `User` es lo que sale de la base (con password_hash e id ya generados),
 /// esto es lo que entra desde el comando Tauri antes de hashear el password.
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateUserInput {
     pub username: String,
     pub email: String,

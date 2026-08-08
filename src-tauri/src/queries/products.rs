@@ -1,3 +1,5 @@
+// src-tauri/src/queries/products.rs
+
 use crate::db::AppResult;
 use crate::models::catalog::{CreateProductInput, Product, ProductType};
 use sqlx::PgPool;
