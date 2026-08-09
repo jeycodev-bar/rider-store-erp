@@ -9,6 +9,15 @@ export type ServiceOrderStatus =
     | "ENTREGADO"
     | "CANCELADO";
 
+export interface LaborCatalog {
+    id: string;
+    name: string;
+    description: string | null;
+    standardPrice: string;
+    estimatedHours: string | null;
+    isActive: boolean;
+}
+
 export interface CustomerVehicle {
     id: string;
     customerId: string;

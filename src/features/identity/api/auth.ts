@@ -15,3 +15,8 @@ export function logout(): Promise<void> {
 export function getCurrentUser(): Promise<User | null> {
     return invoke<User | null>("get_current_user");
 }
+
+/** Para selectores de "técnico asignado" en órdenes de servicio, etc. */
+export function listUsers(): Promise<User[]> {
+    return invoke<User[]>("list_users");
+}

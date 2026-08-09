@@ -6,9 +6,14 @@ import type {
     CreateCustomerVehicleInput,
     CreateServiceOrderInput,
     CustomerVehicle,
+    LaborCatalog,
     ServiceOrder,
     ServiceOrderStatus,
 } from "../types";
+
+export function listLaborCatalog(): Promise<LaborCatalog[]> {
+    return invoke<LaborCatalog[]>("list_labor_catalog");
+}
 
 export function findCustomerVehicleByVin(vin: string): Promise<CustomerVehicle> {
     return invoke<CustomerVehicle>("find_customer_vehicle_by_vin", { vin });

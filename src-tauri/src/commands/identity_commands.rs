@@ -6,6 +6,11 @@ use crate::queries;
 use argon2::{password_hash::PasswordHash, Argon2, PasswordVerifier};
 use serde::Deserialize;
 
+#[tauri::command]
+pub async fn list_users(state: tauri::State<'_, AppState>) -> AppResult<Vec<User>> {
+    queries::users::list_active(&state.db).await
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LoginInput {

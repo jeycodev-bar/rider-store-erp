@@ -8,8 +8,9 @@ import { CatalogPage } from "@/features/catalog/pages/CatalogPage";
 import { InventoryPage } from "@/features/inventory/pages/InventoryPage";
 import { SalesPage } from "@/features/sales/pages/SalesPage";
 import { PurchasingPage } from "@/features/purchasing/pages/PurchasingPage";
-import { PurchaseOrderDetailPage } from "@/features/purchasing/pages/PurchasingOrderDetailPage";
-import { PlaceholderPage } from "@/components/ui/PlaceholderPage";
+import { PurchaseOrderDetailPage } from "@/features/purchasing/pages/PurchaseOrderDetailPage";
+import { WorkshopPage } from "@/features/workshop/pages/WorkshopPage";
+import { ServiceOrderDetailPage } from "@/features/workshop/pages/ServiceOrderDetailPage";
 
 // HashRouter (no BrowserRouter): en una app de escritorio Tauri no hay
 // servidor devolviendo index.html para cada sub-ruta — con hash routing
@@ -26,7 +27,8 @@ export function AppRouter() {
             <Route path="catalog" element={<CatalogPage />} />
             <Route path="inventory" element={<InventoryPage />} />
             <Route path="sales" element={<SalesPage />} />
-            <Route path="workshop" element={<PlaceholderPage title="Taller" />} />
+            <Route path="workshop" element={<WorkshopPage />} />
+            <Route path="workshop/:id" element={<ServiceOrderDetailPage />} />
             <Route path="purchasing" element={<PurchasingPage />} />
             <Route path="purchasing/:id" element={<PurchaseOrderDetailPage />} />
           </Route>

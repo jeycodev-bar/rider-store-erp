@@ -4,10 +4,26 @@ use crate::db::AppResult;
 use crate::models::inventory::MovementType;
 use crate::models::workshop::{
     AddLaborInput, AddPartInput, CreateCustomerVehicleInput, CreateServiceOrderInput,
-    CustomerVehicle, ServiceOrder, ServiceOrderStatus,
+    CustomerVehicle, LaborCatalog, ServiceOrder, ServiceOrderStatus,
 };
 use sqlx::PgPool;
 use uuid::Uuid;
+
+pub async fn list_labor_catalog(pool: &PgPool) -> AppResult<Vec<LaborCatalog>> {
+    let labor = sqlx::query_as!(
+        LaborCatalog,
+        r#"
+        SELECT id, name, description, standard_price, estimated_hours, is_active
+        FROM workshop.labor_catalog
+        WHERE is_active = TRUE
+        ORDER BY name
+        "#
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(labor)
+}
 
 // ---------------------------------------------------------------------
 // Vehículos de clientes (pueden no haberse comprado en la tienda)

@@ -3,9 +3,14 @@
 use crate::db::{AppResult, AppState};
 use crate::models::workshop::{
     AddLaborInput, AddPartInput, CreateCustomerVehicleInput, CreateServiceOrderInput,
-    CustomerVehicle, ServiceOrder, ServiceOrderStatus,
+    CustomerVehicle, LaborCatalog, ServiceOrder, ServiceOrderStatus,
 };
 use uuid::Uuid;
+
+#[tauri::command]
+pub async fn list_labor_catalog(state: tauri::State<'_, AppState>) -> AppResult<Vec<LaborCatalog>> {
+    crate::queries::workshop::list_labor_catalog(&state.db).await
+}
 
 #[tauri::command]
 pub async fn find_customer_vehicle_by_vin(

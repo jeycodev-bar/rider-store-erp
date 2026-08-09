@@ -34,6 +34,7 @@ pub fn run() {
             identity_commands::login,
             identity_commands::logout,
             identity_commands::get_current_user,
+            identity_commands::list_users,
             // catalog
             catalog_commands::get_product,
             catalog_commands::get_product_by_sku,
@@ -59,6 +60,7 @@ pub fn run() {
             sales_commands::create_sale,
             sales_commands::get_sale,
             // workshop
+            workshop_commands::list_labor_catalog,
             workshop_commands::find_customer_vehicle_by_vin,
             workshop_commands::list_customer_vehicles,
             workshop_commands::create_customer_vehicle,
