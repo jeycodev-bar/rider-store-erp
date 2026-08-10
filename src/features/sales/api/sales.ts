@@ -4,9 +4,23 @@ import type {
     CreateCustomerInput,
     CreateSaleInput,
     Customer,
+    Payment,
     PosSession,
+    SaleItem,
     SalesOrder,
 } from "../types";
+
+export function getCustomer(id: string): Promise<Customer> {
+    return invoke<Customer>("get_customer", { id });
+}
+
+export function listSaleItems(saleId: string): Promise<SaleItem[]> {
+    return invoke<SaleItem[]>("list_sale_items", { saleId });
+}
+
+export function listSalePayments(saleId: string): Promise<Payment[]> {
+    return invoke<Payment[]>("list_sale_payments", { saleId });
+}
 
 export function findCustomerByDocument(
     documentType: string,

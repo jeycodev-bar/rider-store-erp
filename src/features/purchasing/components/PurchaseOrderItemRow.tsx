@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useProduct } from "@/features/catalog/hooks/useProduct";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/features/identity/context/AuthProvider";
 import { ReceiveStockItemForm } from "./ReceiveStockItemForm";
 import { ReceiveVehicleUnitForm } from "./ReceiveVehicleUnitForm";
 import type { PurchaseOrderItem } from "../types";
@@ -18,6 +19,7 @@ export function PurchaseOrderItemRow({
     item,
     warehouseId,
 }: PurchaseOrderItemRowProps) {
+    const { hasPermission } = useAuth();
     const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false);
     const { data: product, isLoading } = useProduct(item.productId);
 
@@ -36,9 +38,11 @@ export function PurchaseOrderItemRow({
                         Completo
                     </span>
                 ) : (
-                    <Button variant="secondary" onClick={() => setIsReceiveModalOpen(true)}>
-                        Recibir
-                    </Button>
+                    hasPermission("purchasing.manage") && (
+                        <Button variant="secondary" onClick={() => setIsReceiveModalOpen(true)}>
+                            Recibir
+                        </Button>
+                    )
                 )}
             </td>
 

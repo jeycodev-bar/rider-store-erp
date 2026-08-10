@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { formatCurrency } from "@/lib/format";
+import { useAuth } from "@/features/identity/context/AuthProvider";
 import { usePurchaseOrders } from "../hooks/usePurchaseOrders";
 import { CreatePurchaseOrderForm } from "../components/CreatePurchaseOrderForm";
 import type { PurchaseOrderStatus } from "../types";
@@ -19,6 +20,7 @@ const STATUS_TABS: { value: PurchaseOrderStatus; label: string }[] = [
 
 export function PurchasingPage() {
     const navigate = useNavigate();
+    const { hasPermission } = useAuth();
     const [status, setStatus] = useState<PurchaseOrderStatus>("ENVIADA");
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -28,10 +30,12 @@ export function PurchasingPage() {
         <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold text-[var(--color-text-primary)]">Compras</h1>
-                <Button onClick={() => setIsModalOpen(true)}>
-                    <Plus size={16} />
-                    Nueva orden de compra
-                </Button>
+                {hasPermission("purchasing.manage") && (
+                    <Button onClick={() => setIsModalOpen(true)}>
+                        <Plus size={16} />
+                        Nueva orden de compra
+                    </Button>
+                )}
             </div>
 
             <div className="flex gap-1 border-b border-[var(--color-border)]">

@@ -66,8 +66,6 @@ export interface SalesOrder {
     updatedAt: string;
 }
 
-/** Un ítem tal como lo arma el POS antes de confirmar — vehicleUnitId
- * solo aplica si el producto es serializado (el backend valida esto). */
 /** Estado local del carrito en el POS — no es lo que viaja al backend
  * (eso es SaleItemInput). `key` es un id generado en el cliente para
  * poder editar/quitar filas antes de confirmar la venta. */
@@ -77,6 +75,30 @@ export interface CartItem {
     quantity: string;
     unitPrice: string;
     discountAmount: string;
+}
+
+/** Línea de venta ya confirmada, tal como vive en la base — para el
+ * comprobante. `vehicleUnitId` no-null significa que esa línea fue un
+ * vehículo serializado, no un repuesto/accesorio/fluido. */
+export interface SaleItem {
+    id: string;
+    saleId: string;
+    productId: string;
+    vehicleUnitId: string | null;
+    quantity: string;
+    unitPrice: string;
+    discountAmount: string;
+    lineTotal: string;
+}
+
+/** Pago ya confirmado, tal como vive en la base. */
+export interface Payment {
+    id: string;
+    saleId: string;
+    paymentMethod: PaymentMethod;
+    amount: string;
+    referenceCode: string | null;
+    paidAt: string;
 }
 
 export interface SaleItemInput {

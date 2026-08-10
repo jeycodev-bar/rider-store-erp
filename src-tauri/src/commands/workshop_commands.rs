@@ -41,6 +41,7 @@ pub async fn create_service_order(
     state: tauri::State<'_, AppState>,
     input: CreateServiceOrderInput,
 ) -> AppResult<ServiceOrder> {
+    state.require_permission("workshop.manage").await?;
     let order_number = format!("OS-{}", chrono::Utc::now().format("%Y%m%d%H%M%S%3f"));
     crate::queries::workshop::create_service_order(&state.db, order_number, input).await
 }
@@ -68,17 +69,19 @@ pub async fn update_service_order_status(
     new_status: ServiceOrderStatus,
     diagnosis: Option<String>,
 ) -> AppResult<ServiceOrder> {
+    state.require_permission("workshop.manage").await?;
     crate::queries::workshop::update_service_order_status(&state.db, id, new_status, diagnosis)
         .await
 }
 
 #[tauri::command]
 pub async fn add_labor(state: tauri::State<'_, AppState>, input: AddLaborInput) -> AppResult<()> {
+    state.require_permission("workshop.manage").await?;
     crate::queries::workshop::add_labor(&state.db, input).await
 }
 
 #[tauri::command]
 pub async fn add_part(state: tauri::State<'_, AppState>, input: AddPartInput) -> AppResult<()> {
-    let current_user = state.require_current_user().await?;
+    let current_user = state.require_permission("workshop.manage").await?;
     crate::queries::workshop::add_part(&state.db, input, current_user).await
 }

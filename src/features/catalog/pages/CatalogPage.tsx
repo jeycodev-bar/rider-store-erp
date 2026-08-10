@@ -4,13 +4,15 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { formatProductType } from "@/lib/format";
+import { useAuth } from "@/features/identity/context/AuthProvider";
 import { useProducts } from "../hooks/useProducts";
-import { ProductTable } from "../components/ProducTable";
+import { ProductTable } from "../components/ProductTable";
 import { CreateProductForm } from "../components/CreateProductForm";
 import { PRODUCT_TYPES } from "../schemas/createProduct.schema";
 import type { ProductType } from "../types";
 
 export function CatalogPage() {
+    const { hasPermission } = useAuth();
     const [selectedType, setSelectedType] = useState<ProductType>("MOTO");
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -20,10 +22,12 @@ export function CatalogPage() {
         <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold text-[var(--color-text-primary)]">Catálogo</h1>
-                <Button onClick={() => setIsModalOpen(true)}>
-                    <Plus size={16} />
-                    Nuevo producto
-                </Button>
+                {hasPermission("catalog.create") && (
+                    <Button onClick={() => setIsModalOpen(true)}>
+                        <Plus size={16} />
+                        Nuevo producto
+                    </Button>
+                )}
             </div>
 
             {/* Filtro por tipo — pestañas simples, no un <select> perdido arriba

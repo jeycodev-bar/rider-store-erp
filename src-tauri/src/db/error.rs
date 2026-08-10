@@ -18,6 +18,13 @@ pub enum AppError {
     #[error("dato inválido: {0}")]
     Validation(String),
 
+    /// Distinto de `Validation`: acá el dato está bien, lo que falta es
+    /// autorización. Separarlo permite que el frontend algún día trate
+    /// "no tenés permiso" de forma distinta a "completaste mal el form"
+    /// (ej. redirigir vs. resaltar un campo).
+    #[error("permiso denegado: {0}")]
+    Forbidden(String),
+
     #[error("error interno de base de datos")]
     Database(String),
 }

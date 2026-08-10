@@ -7,7 +7,7 @@ mod queries;
 
 use commands::{
     catalog_commands, identity_commands, inventory_commands, purchasing_commands, sales_commands,
-    workshop_commands,
+    settings_commands, workshop_commands,
 };
 use db::{create_pool, AppState, PoolConfig};
 use tauri::Manager; // necesario para que .manage() esté disponible en AppHandle
@@ -34,7 +34,14 @@ pub fn run() {
             identity_commands::login,
             identity_commands::logout,
             identity_commands::get_current_user,
+            identity_commands::get_current_permissions,
             identity_commands::list_users,
+            identity_commands::create_user,
+            identity_commands::update_user_status,
+            identity_commands::list_roles,
+            identity_commands::list_user_roles,
+            identity_commands::assign_role,
+            identity_commands::remove_role,
             // catalog
             catalog_commands::get_product,
             catalog_commands::get_product_by_sku,
@@ -59,6 +66,9 @@ pub fn run() {
             sales_commands::close_pos_session,
             sales_commands::create_sale,
             sales_commands::get_sale,
+            sales_commands::get_customer,
+            sales_commands::list_sale_items,
+            sales_commands::list_sale_payments,
             // workshop
             workshop_commands::list_labor_catalog,
             workshop_commands::find_customer_vehicle_by_vin,
@@ -77,6 +87,9 @@ pub fn run() {
             purchasing_commands::list_purchase_orders_by_status,
             purchasing_commands::receive_stock_item,
             purchasing_commands::receive_vehicle_unit,
+            // settings
+            settings_commands::get_company_profile,
+            settings_commands::update_company_profile,
         ])
         .run(tauri::generate_context!())
         .expect("error al iniciar la aplicación Tauri");

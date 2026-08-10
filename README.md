@@ -134,3 +134,11 @@ pnpm tauri dev
 Este repositorio sigue reglas estrictas de control de versiones:
 -Las credenciales y claves privadas (.env) están ignoradas por defecto.
 -Los compilados de Rust (/target/) y paquetes de Node (/node_modules/) no forman parte del control de versiones.
+
+
+## Roles con diferenciación real (no todo ADMINISTRADOR): [Rol	Permisos]
+ADMINISTRADOR:	los 6 (armado dinámico, hereda automáticamente cualquier permiso nuevo que agregues)
+VENDEDOR     :	sales.create
+ALMACENERO	 :  inventory.adjust, catalog.create, purchasing.manage
+TECNICO	     :  workshop.manage
+---> Para aplicar: docker exec -i rider_store_pg psql -U admin_rider -d rider_store_db < docker\init\05-seed-roles.sql

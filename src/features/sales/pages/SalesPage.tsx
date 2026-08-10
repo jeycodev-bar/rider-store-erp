@@ -1,7 +1,10 @@
 // src/features/sales/pages/SalesPage.tsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Printer } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ApiError } from "@/lib/tauri";
+import { useAuth } from "@/features/identity/context/AuthProvider";
 import { usePosSession } from "../hooks/usePosSession";
 import { useCreateSale } from "../hooks/useCreateSale";
 import { OpenSessionForm } from "../components/OpenSessionForm";
@@ -16,6 +19,8 @@ interface PaymentRow extends PaymentInput {
 }
 
 export function SalesPage() {
+    const navigate = useNavigate();
+    const { hasPermission } = useAuth();
     const { session } = usePosSession();
     const createSale = useCreateSale();
 
@@ -25,6 +30,15 @@ export function SalesPage() {
         { key: crypto.randomUUID(), paymentMethod: "EFECTIVO" as PaymentMethod, amount: "0.00" },
     ]);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [lastSaleId, setLastSaleId] = useState<string | null>(null);
+
+    if (!hasPermission("sales.create")) {
+        return (
+            <p className="text-sm text-[var(--color-text-secondary)]">
+                No tenés permiso para vender. Pedile a un administrador que te asigne el rol correspondiente.
+            </p>
+        );
+    }
 
     // Sin caja abierta, no hay POS — mostramos la apertura y cortamos acá.
     if (!session) {
@@ -134,6 +148,7 @@ export function SalesPage() {
             });
 
             setSuccessMessage(`Venta ${created.orderNumber} confirmada.`);
+            setLastSaleId(created.id);
             setCartItems([]);
             setCustomer(null);
             setPayments([{ key: crypto.randomUUID(), paymentMethod: "EFECTIVO", amount: "0.00" }]);
@@ -182,7 +197,19 @@ export function SalesPage() {
                             : "No se pudo confirmar la venta."}
                     </p>
                 )}
-                {successMessage && <p className="text-sm text-success-500">{successMessage}</p>}
+                {successMessage && (
+                    <div className="flex items-center justify-between rounded-md bg-success-500/10 px-3 py-2">
+                        <p className="text-sm text-success-500">{successMessage}</p>
+                        {lastSaleId && (
+                            <button
+                                onClick={() => navigate(`/sales/${lastSaleId}/receipt`)}
+                                className="flex items-center gap-1 text-sm text-brand-600 hover:underline"
+                            >
+                                <Printer size={14} /> Imprimir comprobante
+                            </button>
+                        )}
+                    </div>
+                )}
 
                 <Button disabled={!canConfirm} isLoading={createSale.isPending} onClick={handleConfirmSale}>
                     Confirmar venta

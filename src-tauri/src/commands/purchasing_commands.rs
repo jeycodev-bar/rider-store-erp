@@ -20,7 +20,7 @@ pub async fn create_purchase_order(
     state: tauri::State<'_, AppState>,
     input: CreatePurchaseOrderInput,
 ) -> AppResult<PurchaseOrder> {
-    let current_user = state.require_current_user().await?;
+    let current_user = state.require_permission("purchasing.manage").await?;
     crate::queries::purchasing::create_purchase_order(&state.db, input, current_user).await
 }
 
@@ -46,7 +46,7 @@ pub async fn receive_stock_item(
     purchase_order_id: Uuid,
     input: ReceiveStockItemInput,
 ) -> AppResult<()> {
-    let current_user = state.require_current_user().await?;
+    let current_user = state.require_permission("purchasing.manage").await?;
     crate::queries::purchasing::receive_stock_item(
         &state.db,
         purchase_order_id,
@@ -62,7 +62,7 @@ pub async fn receive_vehicle_unit(
     purchase_order_id: Uuid,
     input: ReceiveVehicleUnitInput,
 ) -> AppResult<Uuid> {
-    let current_user = state.require_current_user().await?;
+    let current_user = state.require_permission("purchasing.manage").await?;
     crate::queries::purchasing::receive_vehicle_unit(
         &state.db,
         purchase_order_id,

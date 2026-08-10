@@ -5,6 +5,7 @@ import { ArrowLeft, Plus } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
+import { useAuth } from "@/features/identity/context/AuthProvider";
 import { useServiceOrder } from "../hooks/useServiceOrderDetail";
 import { ServiceOrderStatusActions } from "../components/ServiceOrderStatusActions";
 import { AddLaborForm } from "../components/AddLaborForm";
@@ -23,6 +24,8 @@ const STATUS_LABELS: Record<string, string> = {
 export function ServiceOrderDetailPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { hasPermission } = useAuth();
+    const canManage = hasPermission("workshop.manage");
     const [isLaborModalOpen, setIsLaborModalOpen] = useState(false);
     const [isPartModalOpen, setIsPartModalOpen] = useState(false);
 
@@ -75,14 +78,16 @@ export function ServiceOrderDetailPage() {
                         <p className="text-sm font-medium text-[var(--color-text-primary)]">
                             Mano de obra y repuestos
                         </p>
-                        <div className="flex gap-2">
-                            <Button variant="secondary" onClick={() => setIsLaborModalOpen(true)}>
-                                <Plus size={14} /> Mano de obra
-                            </Button>
-                            <Button variant="secondary" onClick={() => setIsPartModalOpen(true)}>
-                                <Plus size={14} /> Repuesto
-                            </Button>
-                        </div>
+                        {canManage && (
+                            <div className="flex gap-2">
+                                <Button variant="secondary" onClick={() => setIsLaborModalOpen(true)}>
+                                    <Plus size={14} /> Mano de obra
+                                </Button>
+                                <Button variant="secondary" onClick={() => setIsPartModalOpen(true)}>
+                                    <Plus size={14} /> Repuesto
+                                </Button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-4">
@@ -107,7 +112,9 @@ export function ServiceOrderDetailPage() {
                     </div>
                 </div>
 
-                <ServiceOrderStatusActions orderId={order.id} currentStatus={order.status} />
+                {canManage && (
+                    <ServiceOrderStatusActions orderId={order.id} currentStatus={order.status} />
+                )}
             </div>
 
             <Modal

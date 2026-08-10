@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
+import { useAuth } from "@/features/identity/context/AuthProvider";
 import { useServiceOrders } from "../hooks/useServiceOrders";
 import { CreateServiceOrderForm } from "../components/CreateServiceOrderForm";
 import type { ServiceOrderStatus } from "../types";
@@ -19,6 +20,7 @@ const STATUS_TABS: { value: ServiceOrderStatus; label: string }[] = [
 
 export function WorkshopPage() {
     const navigate = useNavigate();
+    const { hasPermission } = useAuth();
     const [status, setStatus] = useState<ServiceOrderStatus>("RECIBIDO");
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -28,10 +30,12 @@ export function WorkshopPage() {
         <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold text-[var(--color-text-primary)]">Taller</h1>
-                <Button onClick={() => setIsModalOpen(true)}>
-                    <Plus size={16} />
-                    Nueva orden de servicio
-                </Button>
+                {hasPermission("workshop.manage") && (
+                    <Button onClick={() => setIsModalOpen(true)}>
+                        <Plus size={16} />
+                        Nueva orden de servicio
+                    </Button>
+                )}
             </div>
 
             <div className="flex gap-1 overflow-x-auto border-b border-[var(--color-border)]">

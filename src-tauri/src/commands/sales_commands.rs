@@ -2,10 +2,31 @@
 
 use crate::db::{AppResult, AppState};
 use crate::models::sales::{
-    CreateCustomerInput, CreateSaleInput, Customer, PosSession, SalesOrder,
+    CreateCustomerInput, CreateSaleInput, Customer, Payment, PosSession, SaleItem, SalesOrder,
 };
 use rust_decimal::Decimal;
 use uuid::Uuid;
+
+#[tauri::command]
+pub async fn get_customer(state: tauri::State<'_, AppState>, id: Uuid) -> AppResult<Customer> {
+    crate::queries::sales::get_customer(&state.db, id).await
+}
+
+#[tauri::command]
+pub async fn list_sale_items(
+    state: tauri::State<'_, AppState>,
+    sale_id: Uuid,
+) -> AppResult<Vec<SaleItem>> {
+    crate::queries::sales::list_sale_items(&state.db, sale_id).await
+}
+
+#[tauri::command]
+pub async fn list_sale_payments(
+    state: tauri::State<'_, AppState>,
+    sale_id: Uuid,
+) -> AppResult<Vec<Payment>> {
+    crate::queries::sales::list_sale_payments(&state.db, sale_id).await
+}
 
 #[tauri::command]
 pub async fn find_customer_by_document(
@@ -42,7 +63,7 @@ pub async fn open_pos_session(
     warehouse_id: Uuid,
     opening_amount: Decimal,
 ) -> AppResult<PosSession> {
-    let current_user = state.require_current_user().await?;
+    let current_user = state.require_permission("sales.create").await?;
     crate::queries::sales::open_pos_session(&state.db, warehouse_id, current_user, opening_amount)
         .await
 }
@@ -54,7 +75,7 @@ pub async fn close_pos_session(
     closing_amount: Decimal,
     expected_amount: Decimal,
 ) -> AppResult<PosSession> {
-    let current_user = state.require_current_user().await?;
+    let current_user = state.require_permission("sales.create").await?;
     crate::queries::sales::close_pos_session(
         &state.db,
         session_id,
@@ -74,7 +95,7 @@ pub async fn create_sale(
     state: tauri::State<'_, AppState>,
     input: CreateSaleInput,
 ) -> AppResult<SalesOrder> {
-    let current_user = state.require_current_user().await?;
+    let current_user = state.require_permission("sales.create").await?;
     let order_number = format!("V-{}", chrono::Utc::now().format("%Y%m%d%H%M%S%3f"));
     crate::queries::sales::create_sale(&state.db, order_number, input, current_user).await
 }

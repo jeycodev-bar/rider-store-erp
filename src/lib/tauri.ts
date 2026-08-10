@@ -3,7 +3,7 @@ import { invoke as tauriInvoke } from "@tauri-apps/api/core";
 
 // Espeja db::AppError de Rust — mismo shape gracias a
 // #[serde(tag = "kind", content = "message")]
-export type AppErrorKind = "NotFound" | "Conflict" | "Validation" | "Database";
+export type AppErrorKind = "NotFound" | "Conflict" | "Validation" | "Forbidden" | "Database";
 
 export interface AppError {
   kind: AppErrorKind;
@@ -28,6 +28,8 @@ function defaultMessageFor(kind: AppErrorKind): string {
       return "El registro ya existe.";
     case "Validation":
       return "Los datos enviados no son válidos.";
+    case "Forbidden":
+      return "No tenés permiso para realizar esta acción.";
     case "Database":
       return "Ocurrió un error interno. Intenta de nuevo.";
   }

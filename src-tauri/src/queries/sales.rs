@@ -2,7 +2,8 @@
 
 use crate::db::{AppError, AppResult};
 use crate::models::sales::{
-    CreateCustomerInput, CreateSaleInput, Customer, PosSession, SaleStatus, SalesOrder,
+    CreateCustomerInput, CreateSaleInput, Customer, Payment, PosSession, SaleItem, SaleStatus,
+    SalesOrder,
 };
 use rust_decimal::Decimal;
 use sqlx::PgPool;
@@ -351,4 +352,60 @@ pub async fn get_sale(pool: &PgPool, id: Uuid) -> AppResult<SalesOrder> {
     .await?;
 
     Ok(order)
+}
+
+/// Necesario para el comprobante: nombre/documento del cliente que no
+/// vienen en SalesOrder (solo trae customer_id).
+pub async fn get_customer(pool: &PgPool, id: Uuid) -> AppResult<Customer> {
+    let customer = sqlx::query_as!(
+        Customer,
+        r#"
+        SELECT
+            id, customer_type AS "customer_type: _", document_type, document_number,
+            full_name, phone, email, address, is_active, created_at, updated_at
+        FROM sales.customers
+        WHERE id = $1
+        "#,
+        id
+    )
+    .fetch_one(pool)
+    .await?;
+
+    Ok(customer)
+}
+
+pub async fn list_sale_items(pool: &PgPool, sale_id: Uuid) -> AppResult<Vec<SaleItem>> {
+    let items = sqlx::query_as!(
+        SaleItem,
+        r#"
+        SELECT id, sale_id, product_id, vehicle_unit_id, quantity, unit_price,
+               discount_amount, line_total
+        FROM sales.sale_items
+        WHERE sale_id = $1
+        ORDER BY id
+        "#,
+        sale_id
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(items)
+}
+
+pub async fn list_sale_payments(pool: &PgPool, sale_id: Uuid) -> AppResult<Vec<Payment>> {
+    let payments = sqlx::query_as!(
+        Payment,
+        r#"
+        SELECT id, sale_id, payment_method AS "payment_method: _", amount,
+               reference_code, paid_at
+        FROM sales.payments
+        WHERE sale_id = $1
+        ORDER BY paid_at
+        "#,
+        sale_id
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(payments)
 }

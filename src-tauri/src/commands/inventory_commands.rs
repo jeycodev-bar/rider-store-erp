@@ -56,7 +56,7 @@ pub async fn register_stock_movement(
     state: tauri::State<'_, AppState>,
     input: RegisterStockMovementInput,
 ) -> AppResult<()> {
-    let current_user = state.require_current_user().await?;
+    let current_user = state.require_permission("inventory.adjust").await?;
     let signed_quantity = input.signed_quantity();
 
     queries::inventory::register_stock_movement(
@@ -79,10 +79,6 @@ pub async fn change_vehicle_unit_status(
     vehicle_unit_id: Uuid,
     new_status: VehicleUnitStatus,
 ) -> AppResult<()> {
-    // require_current_user() solo para confirmar que hay sesión activa;
-    // el propio cambio de estado no guarda "quién" lo hizo en esta tabla
-    // (eso lo captura audit.audit_log automáticamente vía trigger, cuando
-    // lo conectemos — ver nota en README de auditoría).
-    state.require_current_user().await?;
+    state.require_permission("inventory.adjust").await?;
     queries::inventory::change_vehicle_unit_status(&state.db, vehicle_unit_id, new_status).await
 }

@@ -51,6 +51,7 @@ pub async fn create_product(
     state: tauri::State<'_, AppState>,
     input: CreateProductInput,
 ) -> AppResult<Product> {
+    state.require_permission("catalog.create").await?;
     queries::products::create(&state.db, input).await
 }
 
@@ -88,5 +89,6 @@ pub async fn create_supplier(
     state: tauri::State<'_, AppState>,
     input: CreateSupplierInput,
 ) -> AppResult<Supplier> {
+    state.require_permission("catalog.create").await?;
     queries::catalog_support::create_supplier(&state.db, input).await
 }

@@ -5,4 +5,5 @@ pub mod identity;
 pub mod inventory;
 pub mod purchasing;
 pub mod sales;
+pub mod settings;
 pub mod workshop;

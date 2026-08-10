@@ -1,7 +1,7 @@
 // src-tauri/src/queries/users.rs
 
 use crate::db::AppResult;
-use crate::models::identity::{CreateUserInput, User};
+use crate::models::identity::{CreateUserInput, User, UserStatus};
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -103,4 +103,45 @@ pub async fn soft_delete(pool: &PgPool, id: Uuid) -> AppResult<()> {
     .await?;
 
     Ok(())
+}
+
+/// Todos los códigos de permiso que el usuario tiene por CUALQUIERA de
+/// sus roles (un usuario puede tener más de un rol — DISTINCT evita
+/// duplicados si dos roles comparten un permiso).
+pub async fn fetch_permissions(pool: &PgPool, user_id: Uuid) -> AppResult<Vec<String>> {
+    let codes = sqlx::query_scalar!(
+        r#"
+        SELECT DISTINCT p.code
+        FROM identity.permissions p
+        JOIN identity.role_permissions rp ON rp.permission_id = p.id
+        JOIN identity.user_roles ur ON ur.role_id = rp.role_id
+        WHERE ur.user_id = $1
+        "#,
+        user_id
+    )
+    .fetch_all(pool)
+    .await?;
+
+    Ok(codes)
+}
+
+pub async fn update_status(pool: &PgPool, id: Uuid, status: UserStatus) -> AppResult<User> {
+    let user = sqlx::query_as!(
+        User,
+        r#"
+        UPDATE identity.users
+        SET status = $2
+        WHERE id = $1
+        RETURNING
+            id, username, email, password_hash, first_name, last_name,
+            phone, status AS "status: _", last_login_at,
+            created_at, updated_at, deleted_at
+        "#,
+        id,
+        status as UserStatus
+    )
+    .fetch_one(pool)
+    .await?;
+
+    Ok(user)
 }
