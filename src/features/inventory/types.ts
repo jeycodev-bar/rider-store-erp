@@ -27,6 +27,35 @@ export interface Warehouse {
     createdAt: string;
 }
 
+export interface CreateWarehouseInput {
+    name: string;
+    code: string;
+    address?: string | null;
+}
+
+export interface UpdateWarehouseInput {
+    name: string;
+    address?: string | null;
+    isActive: boolean;
+}
+
+/** Una fila del kardex tal como vive en la base — inmutable, nunca se
+ * edita ni se borra (ver el trigger en el schema). */
+export interface StockMovement {
+    id: string;
+    movementType: MovementType;
+    productId: string;
+    warehouseId: string;
+    vehicleUnitId: string | null;
+    quantity: string;
+    unitCost: string;
+    referenceType: string | null;
+    referenceId: string | null;
+    notes: string | null;
+    createdBy: string;
+    createdAt: string;
+}
+
 export interface StockItem {
     id: string;
     productId: string;

@@ -50,3 +50,7 @@ export function assignRole(userId: string, roleId: string): Promise<void> {
 export function removeRole(userId: string, roleId: string): Promise<void> {
     return invoke<void>("remove_role", { userId, roleId });
 }
+
+export function resetUserPassword(userId: string, newPassword: string): Promise<void> {
+    return invoke<void>("reset_user_password", { input: { userId, newPassword } });
+}

@@ -74,7 +74,16 @@ pub async fn get_current_permissions(state: tauri::State<'_, AppState>) -> AppRe
 // Gestión de usuarios y roles — todo gateado por identity.manage_users,
 // salvo las lecturas (list_roles, list_user_roles), que cualquier sesión
 // activa puede ver sin problema.
+//
+// Dos guardas de seguridad viven ACÁ (no solo en el frontend), porque
+// es exactamente el tipo de control que un usuario malicioso o
+// simplemente distraído podría saltarse si solo viviera en React:
+//   1. Nadie puede desactivar su PROPIA cuenta.
+//   2. Nadie puede quitar el rol ADMINISTRADOR (ni desactivar la cuenta)
+//      si eso deja al sistema con CERO administradores activos.
 // ---------------------------------------------------------------------
+
+const ADMIN_ROLE_NAME: &str = "ADMINISTRADOR";
 
 /// Input de comando distinto de `CreateUserInput` (el de `models::identity`)
 /// a propósito: ese último espera un `password_hash` YA calculado; acá
@@ -92,6 +101,20 @@ pub struct CreateUserCommandInput {
     pub phone: Option<String>,
 }
 
+fn hash_password(plain: &str) -> AppResult<String> {
+    if plain.len() < 8 {
+        return Err(AppError::Validation(
+            "la contraseña debe tener al menos 8 caracteres".into(),
+        ));
+    }
+
+    let salt = SaltString::generate(&mut OsRng);
+    Argon2::default()
+        .hash_password(plain.as_bytes(), &salt)
+        .map(|hash| hash.to_string())
+        .map_err(|_| AppError::Database("no se pudo generar el hash de la contraseña".into()))
+}
+
 #[tauri::command]
 pub async fn create_user(
     state: tauri::State<'_, AppState>,
@@ -99,17 +122,7 @@ pub async fn create_user(
 ) -> AppResult<User> {
     state.require_permission("identity.manage_users").await?;
 
-    if input.password.len() < 8 {
-        return Err(AppError::Validation(
-            "la contraseña debe tener al menos 8 caracteres".into(),
-        ));
-    }
-
-    let salt = SaltString::generate(&mut OsRng);
-    let password_hash = Argon2::default()
-        .hash_password(input.password.as_bytes(), &salt)
-        .map_err(|_| AppError::Database("no se pudo generar el hash de la contraseña".into()))?
-        .to_string();
+    let password_hash = hash_password(&input.password)?;
 
     queries::users::create(
         &state.db,
@@ -131,14 +144,53 @@ pub async fn update_user_status(
     user_id: Uuid,
     status: UserStatus,
 ) -> AppResult<User> {
-    state.require_permission("identity.manage_users").await?;
+    let current_user = state.require_permission("identity.manage_users").await?;
+
+    if status != UserStatus::Activo {
+        if user_id == current_user {
+            return Err(AppError::Validation(
+                "no podés desactivar tu propia cuenta — pedile a otro administrador".into(),
+            ));
+        }
+
+        let target_roles = queries::roles::list_user_roles(&state.db, user_id).await?;
+        let target_is_admin = target_roles.iter().any(|r| r.name == ADMIN_ROLE_NAME);
+
+        if target_is_admin {
+            let active_admins = queries::roles::count_active_administrators(&state.db).await?;
+            if active_admins <= 1 {
+                return Err(AppError::Validation(
+                    "no se puede desactivar al último administrador activo del sistema".into(),
+                ));
+            }
+        }
+    }
+
     queries::users::update_status(&state.db, user_id, status).await
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ResetPasswordInput {
+    pub user_id: Uuid,
+    pub new_password: String,
+}
+
+#[tauri::command]
+pub async fn reset_user_password(
+    state: tauri::State<'_, AppState>,
+    input: ResetPasswordInput,
+) -> AppResult<()> {
+    state.require_permission("identity.manage_users").await?;
+
+    let password_hash = hash_password(&input.new_password)?;
+    queries::users::update_password_hash(&state.db, input.user_id, password_hash).await
 }
 
 #[tauri::command]
 pub async fn list_roles(state: tauri::State<'_, AppState>) -> AppResult<Vec<Role>> {
     state.require_current_user().await?;
-    crate::queries::roles::list_roles(&state.db).await
+    queries::roles::list_roles(&state.db).await
 }
 
 #[tauri::command]
@@ -147,7 +199,7 @@ pub async fn list_user_roles(
     user_id: Uuid,
 ) -> AppResult<Vec<Role>> {
     state.require_current_user().await?;
-    crate::queries::roles::list_user_roles(&state.db, user_id).await
+    queries::roles::list_user_roles(&state.db, user_id).await
 }
 
 #[tauri::command]
@@ -157,7 +209,7 @@ pub async fn assign_role(
     role_id: Uuid,
 ) -> AppResult<()> {
     state.require_permission("identity.manage_users").await?;
-    crate::queries::roles::assign_role(&state.db, user_id, role_id).await
+    queries::roles::assign_role(&state.db, user_id, role_id).await
 }
 
 #[tauri::command]
@@ -167,5 +219,20 @@ pub async fn remove_role(
     role_id: Uuid,
 ) -> AppResult<()> {
     state.require_permission("identity.manage_users").await?;
-    crate::queries::roles::remove_role(&state.db, user_id, role_id).await
+
+    let role = queries::roles::find_role_by_id(&state.db, role_id).await?;
+    if role.name == ADMIN_ROLE_NAME {
+        let active_admins = queries::roles::count_active_administrators(&state.db).await?;
+        let target_roles = queries::roles::list_user_roles(&state.db, user_id).await?;
+        let target_is_admin = target_roles.iter().any(|r| r.name == ADMIN_ROLE_NAME);
+
+        if target_is_admin && active_admins <= 1 {
+            return Err(AppError::Validation(
+                "no se puede quitar el rol de ADMINISTRADOR al último administrador del sistema"
+                    .into(),
+            ));
+        }
+    }
+
+    queries::roles::remove_role(&state.db, user_id, role_id).await
 }

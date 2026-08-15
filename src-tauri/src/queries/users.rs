@@ -145,3 +145,15 @@ pub async fn update_status(pool: &PgPool, id: Uuid, status: UserStatus) -> AppRe
 
     Ok(user)
 }
+
+pub async fn update_password_hash(pool: &PgPool, id: Uuid, password_hash: String) -> AppResult<()> {
+    sqlx::query!(
+        r#"UPDATE identity.users SET password_hash = $2 WHERE id = $1"#,
+        id,
+        password_hash
+    )
+    .execute(pool)
+    .await?;
+
+    Ok(())
+}

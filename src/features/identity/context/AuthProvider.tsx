@@ -52,6 +52,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await authApi.logout();
     setUser(null);
     setPermissions([]);
+
+    // BUG REAL que encontramos: la sesión de caja (POS) se guarda en
+    // localStorage, que es compartido por toda la ventana de la app, NO
+    // por usuario. Sin esto, si el Usuario A abre caja y hace logout sin
+    // cerrarla, el Usuario B que entre después heredaría esa caja ajena
+    // — el POS la daría por válida y saltaría directo al carrito. Ver
+    // usePosSession.ts para el detalle de la clave usada.
+    localStorage.removeItem("pos-session");
   }
 
   function hasPermission(code: string) {

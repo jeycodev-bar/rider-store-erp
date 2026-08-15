@@ -1,7 +1,10 @@
 // src-tauri/src/commands/inventory_commands.rs
 
-use crate::db::{AppResult, AppState};
-use crate::models::inventory::{MovementType, StockItem, VehicleUnitStatus, Warehouse};
+use crate::db::{AppResult, AppState, PageParams, PagedResult};
+use crate::models::inventory::{
+    CreateWarehouseInput, MovementType, StockItem, StockMovement, UpdateWarehouseInput,
+    VehicleUnitStatus, Warehouse,
+};
 use crate::queries;
 use rust_decimal::Decimal;
 use serde::Deserialize;
@@ -10,6 +13,41 @@ use uuid::Uuid;
 #[tauri::command]
 pub async fn list_warehouses(state: tauri::State<'_, AppState>) -> AppResult<Vec<Warehouse>> {
     queries::inventory::list_warehouses(&state.db).await
+}
+
+#[tauri::command]
+pub async fn list_all_warehouses(state: tauri::State<'_, AppState>) -> AppResult<Vec<Warehouse>> {
+    state.require_current_user().await?;
+    queries::inventory::list_all_warehouses(&state.db).await
+}
+
+#[tauri::command]
+pub async fn create_warehouse(
+    state: tauri::State<'_, AppState>,
+    input: CreateWarehouseInput,
+) -> AppResult<Warehouse> {
+    state.require_permission("inventory.adjust").await?;
+    queries::inventory::create_warehouse(&state.db, input).await
+}
+
+#[tauri::command]
+pub async fn update_warehouse(
+    state: tauri::State<'_, AppState>,
+    id: Uuid,
+    input: UpdateWarehouseInput,
+) -> AppResult<Warehouse> {
+    state.require_permission("inventory.adjust").await?;
+    queries::inventory::update_warehouse(&state.db, id, input).await
+}
+
+#[tauri::command]
+pub async fn list_stock_movements_paginated(
+    state: tauri::State<'_, AppState>,
+    product_id: Uuid,
+    warehouse_id: Option<Uuid>,
+    params: PageParams,
+) -> AppResult<PagedResult<StockMovement>> {
+    queries::inventory::list_movements_paginated(&state.db, product_id, warehouse_id, params).await
 }
 
 #[tauri::command]

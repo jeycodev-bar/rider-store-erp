@@ -8,10 +8,11 @@ import { useUsers } from "../hooks/useUsers";
 import { useUpdateUserStatus } from "../hooks/useUpdateUserStatus";
 import { CreateUserForm } from "../components/CreateUserForm";
 import { UserRolesManager } from "../components/UserRolesManager";
+import { ResetPasswordForm } from "../components/ResetPasswordForm";
 import type { User } from "../types";
 
 export function UsersPage() {
-  const { hasPermission } = useAuth();
+  const { user: currentUser, hasPermission } = useAuth();
   const canManage = hasPermission("identity.manage_users");
 
   const { data: users, isLoading } = useUsers();
@@ -19,6 +20,7 @@ export function UsersPage() {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [rolesModalUser, setRolesModalUser] = useState<User | null>(null);
+  const [passwordModalUser, setPasswordModalUser] = useState<User | null>(null);
 
   function toggleStatus(user: User) {
     const newStatus = user.status === "ACTIVO" ? "INACTIVO" : "ACTIVO";
@@ -61,43 +63,62 @@ export function UsersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--color-border)]">
-              {users.map((user) => (
-                <tr key={user.id} className="text-[var(--color-text-primary)]">
-                  <td className="px-4 py-2">
-                    {user.firstName} {user.lastName}
-                  </td>
-                  <td className="px-4 py-2 font-mono text-xs">{user.username}</td>
-                  <td className="px-4 py-2 text-[var(--color-text-secondary)]">{user.email}</td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs ${user.status === "ACTIVO"
-                          ? "bg-success-500/15 text-success-500"
-                          : "bg-[var(--color-border)] text-[var(--color-text-secondary)]"
-                        }`}
-                    >
-                      {user.status}
-                    </span>
-                  </td>
-                  {canManage && (
+              {users.map((user) => {
+                const isSelf = user.id === currentUser?.id;
+                return (
+                  <tr key={user.id} className="text-[var(--color-text-primary)]">
                     <td className="px-4 py-2">
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => setRolesModalUser(user)}
-                          className="text-xs text-brand-600 hover:underline"
-                        >
-                          Roles
-                        </button>
-                        <button
-                          onClick={() => toggleStatus(user)}
-                          className="text-xs text-[var(--color-text-secondary)] hover:text-danger-500"
-                        >
-                          {user.status === "ACTIVO" ? "Desactivar" : "Activar"}
-                        </button>
-                      </div>
+                      {user.firstName} {user.lastName}
+                      {isSelf && (
+                        <span className="ml-2 text-xs text-[var(--color-text-secondary)]">
+                          (vos)
+                        </span>
+                      )}
                     </td>
-                  )}
-                </tr>
-              ))}
+                    <td className="px-4 py-2 font-mono text-xs">{user.username}</td>
+                    <td className="px-4 py-2 text-[var(--color-text-secondary)]">{user.email}</td>
+                    <td className="px-4 py-2">
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs ${user.status === "ACTIVO"
+                            ? "bg-success-500/15 text-success-500"
+                            : "bg-[var(--color-border)] text-[var(--color-text-secondary)]"
+                          }`}
+                      >
+                        {user.status}
+                      </span>
+                    </td>
+                    {canManage && (
+                      <td className="px-4 py-2">
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => setRolesModalUser(user)}
+                            className="text-xs text-brand-600 hover:underline"
+                          >
+                            Roles
+                          </button>
+                          <button
+                            onClick={() => setPasswordModalUser(user)}
+                            className="text-xs text-brand-600 hover:underline"
+                          >
+                            Contraseña
+                          </button>
+                          {/* Un usuario nunca ve el botón de desactivarse a sí
+                              mismo — la guarda real vive en el backend, pero no
+                              tiene sentido ni mostrar la acción acá. */}
+                          {!isSelf && (
+                            <button
+                              onClick={() => toggleStatus(user)}
+                              className="text-xs text-[var(--color-text-secondary)] hover:text-danger-500"
+                            >
+                              {user.status === "ACTIVO" ? "Desactivar" : "Activar"}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -120,6 +141,20 @@ export function UsersPage() {
         title="Gestionar roles"
       >
         {rolesModalUser && <UserRolesManager user={rolesModalUser} />}
+      </Modal>
+
+      <Modal
+        isOpen={!!passwordModalUser}
+        onClose={() => setPasswordModalUser(null)}
+        title="Restablecer contraseña"
+      >
+        {passwordModalUser && (
+          <ResetPasswordForm
+            user={passwordModalUser}
+            onSuccess={() => setPasswordModalUser(null)}
+            onCancel={() => setPasswordModalUser(null)}
+          />
+        )}
       </Modal>
     </div>
   );

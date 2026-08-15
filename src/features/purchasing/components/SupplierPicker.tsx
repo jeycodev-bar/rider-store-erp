@@ -1,10 +1,11 @@
 // src/features/purchasing/components/SupplierPicker.tsx
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { searchSuppliers } from "@/features/catalog/api/catalogSupport";
 import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import { Modal } from "@/components/ui/Modal";
+import { SearchInput } from "@/components/ui/SearchInput";
 import { CreateSupplierForm } from "./CreateSupplierForm";
 import type { Supplier } from "@/features/catalog/types";
 
@@ -47,18 +48,19 @@ export function SupplierPicker({ selectedSupplier, onSelect }: SupplierPickerPro
 
     return (
         <div className="relative">
-            <div className="flex items-center gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2">
-                <Search size={16} className="text-[var(--color-text-secondary)]" />
-                <input
-                    value={term}
-                    onChange={(e) => setTerm(e.target.value)}
-                    placeholder="Buscar proveedor..."
-                    className="w-full bg-transparent text-sm text-[var(--color-text-primary)] outline-none"
-                />
+            <div className="flex items-center gap-2">
+                <div className="flex-1">
+                    <SearchInput
+                        value={term}
+                        onChange={(e) => setTerm(e.target.value)}
+                        onClear={() => setTerm("")}
+                        placeholder="Buscar proveedor..."
+                    />
+                </div>
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
                     title="Nuevo proveedor"
-                    className="text-[var(--color-text-secondary)] hover:text-brand-500"
+                    className="shrink-0 rounded-md border border-[var(--color-border)] p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-elevated)] hover:text-brand-500"
                 >
                     <Plus size={16} />
                 </button>

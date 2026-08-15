@@ -27,6 +27,14 @@ export function listPurchaseOrdersByStatus(
     return invoke<PurchaseOrder[]>("list_purchase_orders_by_status", { status });
 }
 
+export function sendPurchaseOrder(id: string): Promise<PurchaseOrder> {
+    return invoke<PurchaseOrder>("send_purchase_order", { id });
+}
+
+export function cancelPurchaseOrder(id: string): Promise<PurchaseOrder> {
+    return invoke<PurchaseOrder>("cancel_purchase_order", { id });
+}
+
 export function receiveStockItem(
     purchaseOrderId: string,
     input: ReceiveStockItemInput

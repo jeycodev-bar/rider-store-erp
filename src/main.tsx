@@ -2,6 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "sonner";
 import { ThemeProvider } from "@/lib/ThemeProvider";
 import { AuthProvider } from "@/features/identity/context/AuthProvider";
 import { AppRouter } from "@/routes/router";
@@ -26,10 +27,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <AppRouter />
+          {/* theme="system" + las variables de tokens.css hacen que
+              sonner respete el dark/light mode del resto de la app. */}
+          <Toaster richColors position="top-right" theme="system" />
         </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   </React.StrictMode>
 );
-
-

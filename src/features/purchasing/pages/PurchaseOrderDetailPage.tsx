@@ -1,8 +1,15 @@
 // src/features/purchasing/pages/PurchaseOrderDetailPage.tsx
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Send, Ban } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
-import { usePurchaseOrder, usePurchaseOrderItems } from "../hooks/usePurchaseOrderDetail";
+import { Button } from "@/components/ui/Button";
+import { useAuth } from "@/features/identity/context/AuthProvider";
+import {
+    usePurchaseOrder,
+    usePurchaseOrderItems,
+    useSendPurchaseOrder,
+    useCancelPurchaseOrder,
+} from "../hooks/usePurchaseOrderDetail";
 import { useSuppliers } from "../hooks/useSuppliers";
 import { PurchaseOrderItemRow } from "../components/PurchaseOrderItemRow";
 
@@ -17,16 +24,22 @@ const STATUS_LABELS: Record<string, string> = {
 export function PurchaseOrderDetailPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { hasPermission } = useAuth();
+    const canManage = hasPermission("purchasing.manage");
 
     const { data: order, isLoading: isOrderLoading } = usePurchaseOrder(id ?? "");
     const { data: items, isLoading: isItemsLoading } = usePurchaseOrderItems(id ?? "");
     const { data: suppliers } = useSuppliers();
+    const sendOrder = useSendPurchaseOrder(id ?? "");
+    const cancelOrder = useCancelPurchaseOrder(id ?? "");
 
     if (isOrderLoading || !order) {
         return <p className="text-sm text-[var(--color-text-secondary)]">Cargando...</p>;
     }
 
     const supplier = suppliers?.find((s) => s.id === order.supplierId);
+    const canSend = canManage && order.status === "BORRADOR";
+    const canCancel = canManage && (order.status === "BORRADOR" || order.status === "ENVIADA");
 
     return (
         <div className="flex flex-col gap-4">
@@ -46,9 +59,33 @@ export function PurchaseOrderDetailPage() {
                         {supplier?.businessName ?? "Proveedor"} · {STATUS_LABELS[order.status] ?? order.status}
                     </p>
                 </div>
-                <p className="text-lg font-semibold text-[var(--color-text-primary)]">
-                    {formatCurrency(order.totalAmount)}
-                </p>
+                <div className="flex items-center gap-3">
+                    <p className="text-lg font-semibold text-[var(--color-text-primary)]">
+                        {formatCurrency(order.totalAmount)}
+                    </p>
+                    {canSend && (
+                        <Button
+                            variant="secondary"
+                            isLoading={sendOrder.isPending}
+                            onClick={() => sendOrder.mutate()}
+                        >
+                            <Send size={14} /> Enviar
+                        </Button>
+                    )}
+                    {canCancel && (
+                        <Button
+                            variant="danger"
+                            isLoading={cancelOrder.isPending}
+                            onClick={() => {
+                                if (confirm(`¿Anular la orden ${order.orderNumber}? Esta acción no se puede deshacer.`)) {
+                                    cancelOrder.mutate();
+                                }
+                            }}
+                        >
+                            <Ban size={14} /> Anular
+                        </Button>
+                    )}
+                </div>
             </div>
 
             {isItemsLoading && (

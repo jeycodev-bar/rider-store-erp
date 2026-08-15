@@ -36,6 +36,10 @@ export function ReceiveStockItemForm({
             setError("Cantidad inválida.");
             return;
         }
+        if (Number(quantity) > Number(pending)) {
+            setError(`No podés recibir más de lo pendiente (${pending}).`);
+            return;
+        }
         if (!DECIMAL_REGEX.test(unitCost)) {
             setError("Costo inválido.");
             return;
@@ -63,6 +67,7 @@ export function ReceiveStockItemForm({
             <Input
                 label="Cantidad a recibir"
                 inputMode="decimal"
+                max={pending}
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
             />

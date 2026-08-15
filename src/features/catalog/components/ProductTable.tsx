@@ -7,9 +7,12 @@ interface ProductTableProps {
     products: Product[] | undefined;
     isLoading: boolean;
     error: unknown;
+    /** Si se pasa, cada fila se vuelve clickeable (usado por el "explorador
+     * de catálogo" en los selectores) — sin esto, la tabla es solo lectura. */
+    onRowClick?: (product: Product) => void;
 }
 
-export function ProductTable({ products, isLoading, error }: ProductTableProps) {
+export function ProductTable({ products, isLoading, error, onRowClick }: ProductTableProps) {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-16 text-sm text-[var(--color-text-secondary)]">
@@ -53,7 +56,12 @@ export function ProductTable({ products, isLoading, error }: ProductTableProps) 
                 </thead>
                 <tbody className="divide-y divide-[var(--color-border)]">
                     {products.map((product) => (
-                        <tr key={product.id} className="text-[var(--color-text-primary)]">
+                        <tr
+                            key={product.id}
+                            onClick={onRowClick ? () => onRowClick(product) : undefined}
+                            className={`text-[var(--color-text-primary)] ${onRowClick ? "cursor-pointer hover:bg-[var(--color-surface-elevated)]" : ""
+                                }`}
+                        >
                             <td className="px-4 py-2 font-mono text-xs">{product.sku}</td>
                             <td className="px-4 py-2">{product.name}</td>
                             <td className="px-4 py-2">{formatCurrency(product.basePrice)}</td>

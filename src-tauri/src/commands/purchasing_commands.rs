@@ -41,6 +41,24 @@ pub async fn list_purchase_orders_by_status(
 }
 
 #[tauri::command]
+pub async fn send_purchase_order(
+    state: tauri::State<'_, AppState>,
+    id: Uuid,
+) -> AppResult<PurchaseOrder> {
+    state.require_permission("purchasing.manage").await?;
+    crate::queries::purchasing::send_purchase_order(&state.db, id).await
+}
+
+#[tauri::command]
+pub async fn cancel_purchase_order(
+    state: tauri::State<'_, AppState>,
+    id: Uuid,
+) -> AppResult<PurchaseOrder> {
+    state.require_permission("purchasing.manage").await?;
+    crate::queries::purchasing::cancel_purchase_order(&state.db, id).await
+}
+
+#[tauri::command]
 pub async fn receive_stock_item(
     state: tauri::State<'_, AppState>,
     purchase_order_id: Uuid,

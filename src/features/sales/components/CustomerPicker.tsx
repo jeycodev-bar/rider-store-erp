@@ -1,10 +1,11 @@
 // src/features/sales/components/CustomerPicker.tsx
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, UserPlus } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { searchCustomers } from "../api/sales";
 import { useDebouncedValue } from "@/lib/useDebouncedValue";
 import { Modal } from "@/components/ui/Modal";
+import { SearchInput } from "@/components/ui/SearchInput";
 import { CreateCustomerForm } from "./CreateCustomerForm";
 import type { Customer } from "../types";
 
@@ -47,18 +48,19 @@ export function CustomerPicker({ selectedCustomer, onSelect }: CustomerPickerPro
 
     return (
         <div className="relative">
-            <div className="flex items-center gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2">
-                <Search size={16} className="text-[var(--color-text-secondary)]" />
-                <input
-                    value={term}
-                    onChange={(e) => setTerm(e.target.value)}
-                    placeholder="Buscar cliente por nombre..."
-                    className="w-full bg-transparent text-sm text-[var(--color-text-primary)] outline-none"
-                />
+            <div className="flex items-center gap-2">
+                <div className="flex-1">
+                    <SearchInput
+                        value={term}
+                        onChange={(e) => setTerm(e.target.value)}
+                        onClear={() => setTerm("")}
+                        placeholder="Buscar cliente por nombre..."
+                    />
+                </div>
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
                     title="Nuevo cliente"
-                    className="text-[var(--color-text-secondary)] hover:text-brand-500"
+                    className="shrink-0 rounded-md border border-[var(--color-border)] p-2 text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-elevated)] hover:text-brand-500"
                 >
                     <UserPlus size={16} />
                 </button>

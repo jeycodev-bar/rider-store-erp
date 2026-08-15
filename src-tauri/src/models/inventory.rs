@@ -48,6 +48,26 @@ pub struct Warehouse {
     pub created_at: DateTime<Utc>,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateWarehouseInput {
+    pub name: String,
+    pub code: String,
+    pub address: Option<String>,
+}
+
+/// Solo permite editar nombre/dirección/estado — `code` no se puede
+/// cambiar una vez creado (queda referenciado en el kardex y en
+/// movimientos históricos por su semántica, no por su id, en varios
+/// reportes; cambiarlo después confundiría el historial).
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateWarehouseInput {
+    pub name: String,
+    pub address: Option<String>,
+    pub is_active: bool,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 #[serde(rename_all = "camelCase")]
 pub struct StockItem {

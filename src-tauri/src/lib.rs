@@ -42,10 +42,12 @@ pub fn run() {
             identity_commands::list_user_roles,
             identity_commands::assign_role,
             identity_commands::remove_role,
+            identity_commands::reset_user_password,
             // catalog
             catalog_commands::get_product,
             catalog_commands::get_product_by_sku,
             catalog_commands::list_products_by_type,
+            catalog_commands::list_products_paginated,
             catalog_commands::search_products,
             catalog_commands::create_product,
             catalog_commands::list_brands,
@@ -55,7 +57,11 @@ pub fn run() {
             catalog_commands::create_supplier,
             // inventory
             inventory_commands::list_warehouses,
+            inventory_commands::list_all_warehouses,
+            inventory_commands::create_warehouse,
+            inventory_commands::update_warehouse,
             inventory_commands::get_stock,
+            inventory_commands::list_stock_movements_paginated,
             inventory_commands::register_stock_movement,
             inventory_commands::change_vehicle_unit_status,
             // sales
@@ -85,6 +91,8 @@ pub fn run() {
             purchasing_commands::get_purchase_order,
             purchasing_commands::list_purchase_order_items,
             purchasing_commands::list_purchase_orders_by_status,
+            purchasing_commands::send_purchase_order,
+            purchasing_commands::cancel_purchase_order,
             purchasing_commands::receive_stock_item,
             purchasing_commands::receive_vehicle_unit,
             // settings

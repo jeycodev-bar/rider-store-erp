@@ -67,3 +67,37 @@ pub async fn remove_role(pool: &PgPool, user_id: Uuid, role_id: Uuid) -> AppResu
 
     Ok(())
 }
+
+pub async fn find_role_by_id(pool: &PgPool, id: Uuid) -> AppResult<Role> {
+    let role = sqlx::query_as!(
+        Role,
+        r#"SELECT id, name, description, is_system, created_at, updated_at FROM identity.roles WHERE id = $1"#,
+        id
+    )
+    .fetch_one(pool)
+    .await?;
+
+    Ok(role)
+}
+
+/// Cuenta usuarios ACTIVOS (no desactivados, no borrados) que tienen el
+/// rol ADMINISTRADOR — la base para las 2 guardas de seguridad: "no te
+/// desactivés a vos mismo si sos el último admin" y "no le quites el rol
+/// de admin al último que lo tiene".
+pub async fn count_active_administrators(pool: &PgPool) -> AppResult<i64> {
+    let count = sqlx::query_scalar!(
+        r#"
+        SELECT COUNT(DISTINCT u.id) AS "count!"
+        FROM identity.users u
+        JOIN identity.user_roles ur ON ur.user_id = u.id
+        JOIN identity.roles r ON r.id = ur.role_id
+        WHERE r.name = 'ADMINISTRADOR'
+          AND u.status = 'ACTIVO'
+          AND u.deleted_at IS NULL
+        "#
+    )
+    .fetch_one(pool)
+    .await?;
+
+    Ok(count)
+}

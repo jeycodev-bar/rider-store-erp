@@ -1,6 +1,6 @@
 // src-tauri/src/commands/catalog_commands.rs
 
-use crate::db::{AppResult, AppState};
+use crate::db::{AppResult, AppState, PageParams, PagedResult};
 use crate::models::catalog::{
     Brand, Category, CreateProductInput, CreateSupplierInput, Product, ProductType, Supplier,
 };
@@ -31,6 +31,17 @@ pub async fn list_products_by_type(
     product_type: ProductType,
 ) -> AppResult<Vec<Product>> {
     queries::products::list_by_type(&state.db, product_type).await
+}
+
+/// Fuente de datos del Catálogo con tabla paginada — reemplaza el
+/// listado completo sin paginar para vistas que el usuario navega.
+#[tauri::command]
+pub async fn list_products_paginated(
+    state: tauri::State<'_, AppState>,
+    product_type: Option<ProductType>,
+    params: PageParams,
+) -> AppResult<PagedResult<Product>> {
+    queries::products::list_paginated(&state.db, product_type, params).await
 }
 
 /// Usado por el buscador/autocompletado del POS.

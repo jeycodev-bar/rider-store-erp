@@ -1,6 +1,14 @@
 // src/features/purchasing/hooks/usePurchaseOrderDetail.ts
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPurchaseOrder, listPurchaseOrderItems, receiveStockItem, receiveVehicleUnit } from "../api/purchasing";
+import {
+    cancelPurchaseOrder,
+    getPurchaseOrder,
+    listPurchaseOrderItems,
+    receiveStockItem,
+    receiveVehicleUnit,
+    sendPurchaseOrder,
+} from "../api/purchasing";
+import { toast } from "@/lib/toast";
 
 export function usePurchaseOrder(id: string) {
     return useQuery({
@@ -33,7 +41,11 @@ export function useReceiveStockItem(purchaseOrderId: string) {
     return useMutation({
         mutationFn: (input: Parameters<typeof receiveStockItem>[1]) =>
             receiveStockItem(purchaseOrderId, input),
-        onSuccess: invalidate,
+        onSuccess: () => {
+            invalidate();
+            toast.success("Recepción registrada.");
+        },
+        onError: (err) => toast.error(err, "No se pudo registrar la recepción."),
     });
 }
 
@@ -42,6 +54,34 @@ export function useReceiveVehicleUnit(purchaseOrderId: string) {
     return useMutation({
         mutationFn: (input: Parameters<typeof receiveVehicleUnit>[1]) =>
             receiveVehicleUnit(purchaseOrderId, input),
-        onSuccess: invalidate,
+        onSuccess: () => {
+            invalidate();
+            toast.success("Unidad recibida y registrada.");
+        },
+        onError: (err) => toast.error(err, "No se pudo registrar la unidad."),
+    });
+}
+
+export function useSendPurchaseOrder(purchaseOrderId: string) {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: () => sendPurchaseOrder(purchaseOrderId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["purchaseOrder", purchaseOrderId] });
+            toast.success("Orden marcada como enviada al proveedor.");
+        },
+        onError: (err) => toast.error(err, "No se pudo enviar la orden."),
+    });
+}
+
+export function useCancelPurchaseOrder(purchaseOrderId: string) {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: () => cancelPurchaseOrder(purchaseOrderId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["purchaseOrder", purchaseOrderId] });
+            toast.success("Orden anulada.");
+        },
+        onError: (err) => toast.error(err, "No se pudo anular la orden."),
     });
 }
